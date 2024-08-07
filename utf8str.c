@@ -81,8 +81,10 @@ int utf8_find(char* utf8str_to_search, char* utf8str_to_find) {
 char* utf8_reverse(char* utf8str) {
   // The number of UTF8 characters (Ü counts as 1)
   unsigned int len = utf8_strlen(utf8str);
+
   // The number of bytes (of chars) in the string (Ü counts as 2)
   unsigned int size = bytes_for(utf8str, len);
+
   // Allocate enough space for all the bytes in a new string
   char* new_str = malloc(size + 1);
 
@@ -96,10 +98,13 @@ char* utf8_reverse(char* utf8str) {
   // utf8_index will be which *UTF8 character* we are looking at
   unsigned int utf8_index = 0;
   while(utf8_index < len) {
+
     // How many bytes is the current UTF8 character?
     unsigned int this_utf8_size = num_bytes(utf8str[index]);
+
     // We will start writing a chunk of that size at copy_to_index
     copy_to_index -= this_utf8_size;
+
     // Copy the bytes for the current character (at index) to the
     // copy_to_index one at a time. So the two bytes for Ü end up
     // in order, but at the end of the output string
@@ -111,4 +116,47 @@ char* utf8_reverse(char* utf8str) {
     utf8_index += 1;
   }
   return new_str;
+}
+
+
+// Return a reversed version of the utf8str.
+// utf8_reverse("Ülo") -> "olÜ"
+void utf8_reverse_ref(char* to_write, char* utf8str) {
+  // The number of UTF8 characters (Ü counts as 1)
+  unsigned int len = utf8_strlen(utf8str);
+
+  // The number of bytes (of chars) in the string (Ü counts as 2)
+  unsigned int size = bytes_for(utf8str, len);
+  
+  // NO LONGER allocate a new string, assume that to_write
+  // refers to a string that is long enough to hold the result
+  // char* new_str = malloc(size + 1);
+
+  // copy_to_index will start at the end of the string and move
+  // “backwards” to copy UTF8 characters in reversed order
+  unsigned int copy_to_index = size;
+  to_write[copy_to_index] = '\0';
+
+  // index will be which *byte* we are looking at in the input
+  unsigned int index = 0;
+  // utf8_index will be which *UTF8 character* we are looking at
+  unsigned int utf8_index = 0;
+  while(utf8_index < len) {
+
+    // How many bytes is the current UTF8 character?
+    unsigned int this_utf8_size = num_bytes(utf8str[index]);
+
+    // We will start writing a chunk of that size at copy_to_index
+    copy_to_index -= this_utf8_size;
+
+    // Copy the bytes for the current character (at index) to the
+    // copy_to_index one at a time. So the two bytes for Ü end up
+    // in order, but at the end of the output string
+    for(unsigned int i = 0; i < this_utf8_size; i += 1) {
+      to_write[i + copy_to_index] = utf8str[index + i];
+    }
+    // Update indices
+    index += this_utf8_size;
+    utf8_index += 1;
+  }
 }

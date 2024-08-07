@@ -35,19 +35,7 @@ int main(int argc, char** argv) {
 
   printf("utf8_substring(long_str, 2, 10) -> sé Ülo 成: %s\n", utf8_substring(long_str, 2, 10));
 
-
-
   printf("reverse(\"Ülo\") -> \"olÜ\": %s\n", utf8_reverse("Ülo"));
-
-
-
-
-
-
-
-
-
-
 
   char* name = argv[1];
   int length = strlen(name);
